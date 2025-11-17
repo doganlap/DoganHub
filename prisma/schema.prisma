@@ -1,0 +1,107 @@
+// Prisma schema for Shahin-AI Registration System
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Demo Registration
+model DemoRegistration {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  company       String
+  role          String
+  phone         String?
+  interests     String[] // Array of interest areas
+  registrationType String @default("demo")
+  status        String   @default("pending") // pending, approved, contacted
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("demo_registrations")
+  @@index([email])
+  @@index([createdAt])
+}
+
+// POC Registration
+model POCRegistration {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  company       String
+  role          String
+  phone         String
+  department    String
+  industry      String
+  companySize   String
+  pocInterest   String[] // Array of POC interests
+  requirements  String   @db.Text
+  timeline      String
+  budget        String?
+  registrationType String @default("poc")
+  status        String   @default("pending") // pending, in-review, approved, rejected
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("poc_registrations")
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Sandbox Bookings
+model SandboxBooking {
+  id            String   @id @default(uuid())
+  name          String
+  email         String
+  sandboxType   String   // grc-full, risk-management, compliance, custom
+  date          String
+  time          String
+  purpose       String?  @db.Text
+  status        String   @default("confirmed") // confirmed, completed, cancelled
+  accessLink    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("sandbox_bookings")
+  @@index([email])
+  @@index([date])
+  @@index([status])
+}
+
+// Solution Page Views (Analytics)
+model SolutionView {
+  id            String   @id @default(uuid())
+  solutionId    Int
+  solutionName  String
+  page          Int      // 1-5 (Overview, Features, Use Cases, Implementation, Success)
+  sessionId     String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
+
+  @@map("solution_views")
+  @@index([solutionId])
+  @@index([createdAt])
+}
+
+// Contact Form Submissions
+model ContactSubmission {
+  id            String   @id @default(uuid())
+  name          String
+  email         String
+  subject       String
+  message       String   @db.Text
+  status        String   @default("new") // new, in-progress, resolved
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("contact_submissions")
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+}
